@@ -46,9 +46,9 @@ public class Program
 
         Console.WriteLine("{0} sent message \"{1}\", to {2}", rsaList[sender].senderName, message, rsaList[receiver].senderName);
 
-        string EncryptedMessage = rsaList[sender].EncryptMessage(message);
+        string EncryptedMessage = RSA.EncryptMessage(message, rsaList[sender].e, rsaList[sender].n);
 
-        string DecryptedMessage = RSA.DecryptMessage(EncryptedMessage, rsaList[sender].e, rsaList[sender].n);
+        string DecryptedMessage = rsaList[sender].DecryptMessage(EncryptedMessage);
 
         Console.WriteLine("Decrypted message: \n{0}", DecryptedMessage);
     }

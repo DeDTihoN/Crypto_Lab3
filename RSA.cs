@@ -47,7 +47,7 @@ namespace Crypto_Lab1_
             dmodqsub1 = d % (q - 1);
         }
 
-        public BigInteger EncryptInteger(BigInteger C){
+        public BigInteger DecryptInteger(BigInteger C){
             BigInteger mp = BigInteger.ModPow(C, dmodpsub1, p);
             BigInteger mq = BigInteger.ModPow(C, dmodqsub1, q);
 
@@ -56,7 +56,7 @@ namespace Crypto_Lab1_
             return encrypted;
         }
 
-        public static BigInteger DecryptInteger(BigInteger C, BigInteger E, BigInteger N)
+        public static BigInteger EncryptInteger(BigInteger C, BigInteger E, BigInteger N)
         {
             BigInteger m = BigInteger.ModPow(C, E, N);
             return m;
@@ -105,7 +105,7 @@ namespace Crypto_Lab1_
             return res;
         }
 
-        public string EncryptMessage(string message){
+        public static string EncryptMessage(string message, BigInteger E, BigInteger N){
             string res = "Signature: ";
 
             BigInteger messageInteger = ToInteger(message);
@@ -115,21 +115,21 @@ namespace Crypto_Lab1_
             res += Signature;
             res += "\nMessage: ";
 
-            messageInteger = EncryptInteger(messageInteger);
+            messageInteger = RSA.EncryptInteger(messageInteger, E, N);
 
             res += ToText(messageInteger);
 
             return res;
         }
 
-        public static string DecryptMessage(string message, BigInteger E, BigInteger N){
+        public string DecryptMessage(string message){
             string Signature = message.Split('\n')[0].Split(": ")[1];
             string Message = message.Split('\n')[1].Split(": ")[1];
 
             BigInteger mInteger = ToInteger(Message);
             BigInteger signatureInteger = ToInteger(Signature);
 
-            BigInteger messageInteger = DecryptInteger(mInteger, E, N);
+            BigInteger messageInteger = DecryptInteger(mInteger);
 
             string actualMessage = ToText(messageInteger);
 
