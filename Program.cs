@@ -4,53 +4,89 @@ using System;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Diagnostics;
 
 public class Program
 {
     public static List<RSA> rsaList = new List<RSA>();
     public static void Main()
     {
+        Random random = new Random();
+        Stopwatch stopwatch = new Stopwatch();
 
-        RSA rsaBob = new RSA("Bob");
-        RSA rsaAlice = new RSA("Alice");
+        string filePath = "output.txt";
 
-        rsaList.Add(rsaBob);
-        rsaList.Add(rsaAlice);
+        using (StreamWriter writer = new StreamWriter(filePath, append: true))
+        {
 
-        while(true){
-            int sender = 0;
+            for (int i = 5; i <= 500; ++i)
+            {
+                RSA rsa = new RSA("Bob", i);
 
-            Console.WriteLine("Choose sender: 0 - {0}, 1 - {1}", rsaList[0].senderName, rsaList[1].senderName);
-            sender = Convert.ToInt32(Console.ReadLine());
+                int len = rsa.p.ToString().Length / 4;
 
-            if (!sender.Equals(0) && !sender.Equals(1)){
-                Console.WriteLine("Wrong number");
-                continue;
+                string message = "";
+
+                for (int j = 0; j < len; ++j)
+                {
+                    message += char.ConvertFromUtf32('a' + random.Next(0, 26));
+                }
+                // Запуск заміру часу
+                stopwatch.Start();
+
+                string EncryptedMessage = RSA.EncryptMessage(message, rsa.e, rsa.n);
+                string DecryptedMessage = rsa.DecryptMessage(EncryptedMessage);
+
+                // Зупинка заміру часу
+                stopwatch.Stop();
+                //  Console.WriteLine(DecryptedMessage);
+
+                writer.WriteLine("Time for {0} binary len primes rsa encrypting and decrypting: {1} ms", i, stopwatch.ElapsedMilliseconds);
             }
-
-            int receiver = 1 - sender;
-
-            Console.WriteLine("Enter message:");
-
-            string message = Console.ReadLine();
-
-            SentMessage(sender, receiver, message);
         }
+
+        // RSA rsaBob = new RSA("Bob");
+        // RSA rsaAlice = new RSA("Alice");
+
+        // rsaList.Add(rsaBob);
+        // rsaList.Add(rsaAlice);
+
+        // while(true){
+        //     int sender = 0;
+
+        //     Console.WriteLine("Choose sender: 0 - {0}, 1 - {1}", rsaList[0].senderName, rsaList[1].senderName);
+        //     sender = Convert.ToInt32(Console.ReadLine());
+
+        //     if (!sender.Equals(0) && !sender.Equals(1)){
+        //         Console.WriteLine("Wrong number");
+        //         continue;
+        //     }
+
+        //     int receiver = 1 - sender;
+
+        //     Console.WriteLine("Enter message:");
+
+        //     string message = Console.ReadLine();
+
+        //     SentMessage(sender, receiver, message);
+        // }
     }
 
-    static void SentMessage(int sender, int receiver, string message){
-        if (rsaList[sender].checkMessageSupported(message) == false){
-            Console.WriteLine("Message is not supported by rsa");
+    static void SentMessage(int sender, int receiver, string message)
+    {
+        if (rsaList[sender].checkMessageSupported(message) == false)
+        {
+            //Console.WriteLine("Message is not supported by rsa");
             return;
         }
 
-        Console.WriteLine("{0} sent message \"{1}\", to {2}", rsaList[sender].senderName, message, rsaList[receiver].senderName);
+        //Console.WriteLine("{0} sent message \"{1}\", to {2}", rsaList[sender].senderName, message, rsaList[receiver].senderName);
 
         string EncryptedMessage = RSA.EncryptMessage(message, rsaList[sender].e, rsaList[sender].n);
 
         string DecryptedMessage = rsaList[sender].DecryptMessage(EncryptedMessage);
 
-        Console.WriteLine("Decrypted message: \n{0}", DecryptedMessage);
+        //Console.WriteLine("Decrypted message: \n{0}", DecryptedMessage);
     }
 
     static string ToBase2(BigInteger number)

@@ -33,8 +33,8 @@ namespace Crypto_Lab1_
         {
             this.senderName = senderName;
             this.PRIMES_LENGTH = PRIMES_LENGTH;
-            p = Ariphmetic.GeneratePrime(PRIMES_LENGTH);
-            q = Ariphmetic.GeneratePrime(PRIMES_LENGTH);
+            p = Ariphmetic.GeneratePrimeBinary(PRIMES_LENGTH);
+            q = Ariphmetic.GeneratePrimeBinary(PRIMES_LENGTH);
             n = p * q;
 
             carmichaelPhi = Ariphmetic.LCM(p - 1, q - 1);
