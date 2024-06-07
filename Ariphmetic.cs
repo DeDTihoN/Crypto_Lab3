@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +13,6 @@ namespace Crypto_Lab1_
     internal class Ariphmetic
     {
         const int MillerRabinConst = 30;
-
         public static BigInteger GCD(BigInteger a, BigInteger b){
             return BigInteger.GreatestCommonDivisor(a, b);
         }
@@ -70,7 +70,7 @@ namespace Crypto_Lab1_
             return res % M;
         }
 
-        private static BigInteger PowMod(BigInteger a, BigInteger st, BigInteger mod)
+        public static BigInteger PowMod(BigInteger a, BigInteger st, BigInteger mod)
         {
             BigInteger res = 1;
 
@@ -411,6 +411,16 @@ namespace Crypto_Lab1_
                 if (1<a && a<p && GCD(a, p) == 1) return a;
             }
             throw new ArgumentException("No coprime found.");
+        }
+
+        public static string ComputeHMACSHA256(string message, string key)
+        {
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            using (HMACSHA256 hmac = new HMACSHA256(keyBytes))
+            {
+                byte[] hashMessage = hmac.ComputeHash(Encoding.UTF8.GetBytes(message));
+                return Convert.ToBase64String(hashMessage);
+            }
         }
     }
 }

@@ -97,10 +97,12 @@ namespace Crypto_Lab1_
 
         public static BigInteger ToHash(BigInteger number){
             BigInteger res = 0;
+            BigInteger cur_P = HASH_P;
             while (number > 0)
             {
-                res = (res + (HASH_P * ( number % HASH_MOD +1 )) % HASH_MOD)%HASH_MOD;
+                res = (res + (cur_P * ( number % HASH_MOD +1 )) % HASH_MOD)%HASH_MOD;
                 number /= HASH_MOD;
+                cur_P = (cur_P * HASH_P) % HASH_MOD;
             }
             return res;
         }
@@ -110,14 +112,14 @@ namespace Crypto_Lab1_
 
             BigInteger messageInteger = ToInteger(message);
 
-            string Signature = ToText(ToHash(messageInteger));
+            string Signature = ToHash(messageInteger).ToString();
 
             res += Signature;
             res += "\nMessage: ";
 
             messageInteger = RSA.EncryptInteger(messageInteger, E, N);
 
-            res += ToText(messageInteger);
+            res += messageInteger.ToString();
 
             return res;
         }
@@ -126,8 +128,11 @@ namespace Crypto_Lab1_
             string Signature = message.Split('\n')[0].Split(": ")[1];
             string Message = message.Split('\n')[1].Split(": ")[1];
 
-            BigInteger mInteger = ToInteger(Message);
-            BigInteger signatureInteger = ToInteger(Signature);
+            Console.WriteLine("Signature: " + Signature);
+            Console.WriteLine("Message: " + Message);
+
+            BigInteger mInteger = BigInteger.Parse(Message);
+            BigInteger signatureInteger = BigInteger.Parse(Signature);
 
             BigInteger messageInteger = DecryptInteger(mInteger);
 
